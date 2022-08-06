@@ -1,7 +1,7 @@
 buildscript {
   // Buildscript is evaluated before everything else so we can't use getExtOrDefault
   def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['Au10tixsdk_kotlinVersion']
-
+  //def kotlin_version = "1.5.0"
   repositories {
       google()
       mavenCentral()
@@ -58,81 +58,113 @@ android {
 }
 
 repositories {
-  mavenCentral()
   google()
+  mavenCentral()
 
-  def found = false
-  def defaultDir = null
-  def androidSourcesName = 'React Native sources'
+   maven {
+     url "https://maven.pkg.github.com/au10tixmobile/android_artifacts"
+     credentials {
+       username ""
+       password "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"
+     }
+   }
 
-  if (rootProject.ext.has('reactNativeAndroidRoot')) {
-    defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
-  } else {
-    defaultDir = new File(
-      projectDir,
-      '/../../../node_modules/react-native/android'
-    )
-  }
-
-  if (defaultDir.exists()) {
-    maven {
-      url defaultDir.toString()
-      name androidSourcesName
-    }
-
-    logger.info(":${project.name}:reactNativeAndroidRoot ${defaultDir.canonicalPath}")
-    found = true
-  } else {
-    def parentDir = rootProject.projectDir
-
-    1.upto(5, {
-      if (found) return true
-      parentDir = parentDir.parentFile
-
-      def androidSourcesDir = new File(
-        parentDir,
-        'node_modules/react-native'
-      )
-
-      def androidPrebuiltBinaryDir = new File(
-        parentDir,
-        'node_modules/react-native/android'
-      )
-
-      if (androidPrebuiltBinaryDir.exists()) {
-        maven {
-          url androidPrebuiltBinaryDir.toString()
-          name androidSourcesName
-        }
-
-        logger.info(":${project.name}:reactNativeAndroidRoot ${androidPrebuiltBinaryDir.canonicalPath}")
-        found = true
-      } else if (androidSourcesDir.exists()) {
-        maven {
-          url androidSourcesDir.toString()
-          name androidSourcesName
-        }
-
-        logger.info(":${project.name}:reactNativeAndroidRoot ${androidSourcesDir.canonicalPath}")
-        found = true
-      }
-    })
-  }
-
-  if (!found) {
-    throw new GradleException(
-      "${project.name}: unable to locate React Native android sources. " +
-      "Ensure you have you installed React Native as a dependency in your project and try again."
-    )
-  }
+//  def found = false
+//  def defaultDir = null
+//  def androidSourcesName = 'React Native sources'
+//
+//  if (rootProject.ext.has('reactNativeAndroidRoot')) {
+//    defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
+//  } else {
+//    defaultDir = new File(
+//      projectDir,
+//      '/../../../node_modules/react-native/android'
+//    )
+//  }
+//
+//  if (defaultDir.exists()) {
+//    maven {
+//      url defaultDir.toString()
+//      name androidSourcesName
+//    }
+//
+//    logger.info(":${project.name}:reactNativeAndroidRoot ${defaultDir.canonicalPath}")
+//    found = true
+//  } else {
+//    def parentDir = rootProject.projectDir
+//
+//    1.upto(5, {
+//      if (found) return true
+//      parentDir = parentDir.parentFile
+//
+//      def androidSourcesDir = new File(
+//        parentDir,
+//        'node_modules/react-native'
+//      )
+//
+//      def androidPrebuiltBinaryDir = new File(
+//        parentDir,
+//        'node_modules/react-native/android'
+//      )
+//
+//      if (androidPrebuiltBinaryDir.exists()) {
+//        maven {
+//          url androidPrebuiltBinaryDir.toString()
+//          name androidSourcesName
+//        }
+//
+//        logger.info(":${project.name}:reactNativeAndroidRoot ${androidPrebuiltBinaryDir.canonicalPath}")
+//        found = true
+//      } else if (androidSourcesDir.exists()) {
+//        maven {
+//          url androidSourcesDir.toString()
+//          name androidSourcesName
+//        }
+//
+//        logger.info(":${project.name}:reactNativeAndroidRoot ${androidSourcesDir.canonicalPath}")
+//        found = true
+//      }
+//    })
+//  }
+//
+//  if (!found) {
+//    throw new GradleException(
+//      "${project.name}: unable to locate React Native android sources. " +
+//      "Ensure you have you installed React Native as a dependency in your project and try again."
+//    )
+//  }
 }
 
 def kotlin_version = getExtOrDefault('kotlinVersion')
+def au10Version = "2.8.2"
 
 dependencies {
-    //noinspection GradleDynamicVersion
+  implementation 'com.google.android.gms:play-services-mlkit-face-detection:16.2.0'
+  implementation 'com.google.android.gms:play-services-mlkit-text-recognition:16.3.0'
+
+  implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+  implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+  implementation 'androidx.navigation:navigation-fragment:2.3.5'
+  implementation 'androidx.navigation:navigation-ui:2.3.5'
+
+
+  implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
+  implementation 'com.google.android.gms:play-services-location:17.0.0'
+  implementation 'com.google.code.gson:gson:2.8.6'
+
+
+
+  //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  //implementation "com.au10tix.sdk:au10tix:$au10Version"
+  implementation files('libs/Au10Core-release.aar')
+  implementation files('libs/FaceLiveness-release.aar')
+  implementation files('libs/Backend-release.aar')
+  implementation files('libs/SmartDocument-release.aar')
+
+
+
 // From node_modules
 }
 
